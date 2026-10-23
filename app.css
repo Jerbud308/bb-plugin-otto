@@ -1,0 +1,876 @@
+/* Otto: ledger with marginalia. Only bb theme variables; no hardcoded colors (BUILD_SPEC 12.1). */
+
+.otto-mono,
+.otto-stamp,
+.otto-exit,
+.otto-receipt,
+.otto-count {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.otto-marginalia {
+  font-family: var(--font-serif), ui-serif, Georgia, serif;
+  font-style: italic;
+  color: var(--muted-foreground);
+}
+
+/* ---- Stamp ---- */
+.otto-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 2px;
+  white-space: nowrap;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  box-sizing: border-box;
+}
+.otto-stamp--sm {
+  height: 20px;
+  padding: 0 6px;
+  font-size: 11px;
+}
+.otto-stamp--md {
+  height: 28px;
+  padding: 0 10px;
+  font-size: 13px;
+}
+.otto-stamp__glyph {
+  flex: none;
+}
+.otto-stamp--verified {
+  background: var(--success);
+  color: var(--canvas);
+}
+.otto-stamp--contradicted {
+  background: var(--destructive);
+  color: var(--destructive-foreground);
+}
+.otto-stamp--unverified {
+  border: 1.5px dashed var(--warning);
+  color: var(--warning-text);
+}
+.otto-stamp--noclaim {
+  color: var(--muted-foreground);
+}
+.dark .otto-stamp--verified {
+  background: color-mix(in oklch, var(--success) 15%, transparent);
+  border: 1px solid var(--success);
+  color: var(--success);
+}
+.dark .otto-stamp--contradicted {
+  background: color-mix(in oklch, var(--destructive) 15%, transparent);
+  border: 1px solid var(--destructive);
+  color: var(--destructive-text);
+}
+.otto-stamp--land {
+  animation: otto-stamp-land 90ms ease-out;
+}
+
+/* ---- Ribbon ---- */
+.otto-ribbon {
+  display: inline-flex;
+  gap: 1px;
+  vertical-align: middle;
+  overflow: hidden;
+}
+.otto-ribbon__seg {
+  display: block;
+  height: 100%;
+  min-width: 1px;
+  flex-shrink: 1;
+}
+.otto-ribbon__seg--verified {
+  background: var(--success);
+}
+.otto-ribbon__seg--unverified {
+  background: repeating-linear-gradient(90deg, var(--warning) 0 4px, transparent 4px 7px);
+}
+.otto-ribbon__seg--contradicted {
+  background: var(--destructive);
+}
+
+/* ---- Claim marker and marginalia ---- */
+.otto-claim__text {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.otto-claim__text--clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+/* inline-block keeps the highlight box whole; an inline box split across two lines has no usable box. */
+.otto-marker {
+  display: inline-block;
+  max-width: 100%;
+  position: relative;
+  isolation: isolate;
+  background: transparent;
+  color: var(--ink);
+}
+.otto-marker::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in oklch, var(--warning) 30%, transparent);
+  transform-origin: left center;
+  animation: otto-marker-draw 400ms ease-out;
+}
+.dark .otto-marker::before {
+  background: transparent;
+}
+.dark .otto-marker {
+  text-decoration: underline 2px var(--warning);
+  text-underline-offset: 3px;
+}
+.otto-note {
+  display: block;
+  padding-left: 12px;
+  font-size: 13px;
+}
+
+/* ---- Ledger rows ---- */
+.otto-ledger {
+  border-top: 1px solid var(--border-hairline);
+}
+.otto-row {
+  border-bottom: 1px solid var(--border-hairline);
+  animation: otto-row-enter 160ms ease-out both;
+  animation-delay: calc(var(--otto-i, 0) * 30ms);
+}
+.otto-row__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  width: 100%;
+  padding: 8px 4px;
+  text-align: left;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.otto-row__head:hover {
+  background: color-mix(in oklch, var(--ink) 4%, var(--canvas));
+}
+.otto-row__title {
+  min-width: 0;
+  max-width: 28ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.otto-meta {
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+.otto-chip {
+  font-size: 11px;
+  padding: 1px 6px;
+  border: 1px solid var(--border-hairline);
+  border-radius: 2px;
+  color: var(--muted-foreground);
+}
+.otto-findings--high {
+  color: var(--destructive-text);
+}
+.otto-row__body {
+  display: grid;
+  gap: 12px;
+  padding: 4px 4px 14px;
+}
+.otto-row__body--margin {
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 900px) {
+  .otto-row__body--margin {
+    grid-template-columns: minmax(0, 1fr) 240px;
+  }
+}
+.otto-section-label {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  margin: 0 0 4px;
+}
+.otto-claimline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  padding: 3px 0;
+  border-bottom: 1px solid var(--border-hairline);
+  font-size: 13px;
+}
+.otto-claimline__status--bad {
+  color: var(--destructive-text);
+}
+
+/* ---- Advisor margin ---- */
+.otto-advisor {
+  position: relative;
+  border-left: 1px solid var(--border-hairline);
+  padding: 4px 0 4px 12px;
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  font-size: 13px;
+}
+.otto-advisor::before,
+.otto-advisor::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 8px;
+  border-top: 1px solid var(--border-hairline);
+}
+.otto-advisor::before {
+  top: 0;
+}
+.otto-advisor::after {
+  bottom: 0;
+}
+.otto-advisor__running {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+.otto-advisor__missing {
+  margin: 0;
+  padding-left: 16px;
+}
+.otto-advisor__reasoning {
+  margin: 0;
+}
+.otto-advisor__check {
+  display: grid;
+  gap: 4px;
+  padding: 8px;
+}
+.otto-advisor__ask {
+  justify-self: start;
+}
+
+/* ---- Buttons and tabs ---- */
+.otto-textbtn {
+  background: transparent;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  padding: 2px 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.otto-textbtn:hover {
+  color: var(--ink);
+}
+.otto-btn {
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--ink);
+  font-size: 13px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+.otto-btn:hover:not(:disabled) {
+  background: color-mix(in oklch, var(--ink) 6%, var(--canvas));
+}
+.otto-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.otto-tabs {
+  display: flex;
+  gap: 16px;
+  border-bottom: 1px solid var(--border-hairline);
+}
+.otto-tab {
+  background: transparent;
+  color: var(--muted-foreground);
+  padding: 6px 0;
+  font-size: 14px;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+}
+.otto-tab[aria-current="page"] {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+.otto-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.otto-filter {
+  background: transparent;
+  color: var(--muted-foreground);
+  border: 1px solid var(--border-hairline);
+  border-radius: 2px;
+  font-size: 12px;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+.otto-filter[aria-pressed="true"] {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+/* ---- Receipt ---- */
+.otto-receipt {
+  background: color-mix(in oklch, var(--ink) 4%, var(--canvas));
+  border-top: 2px dotted var(--border-hairline);
+  padding: 12px;
+  font-size: 12px;
+  display: grid;
+  gap: 10px;
+}
+.otto-receipt__line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+}
+.otto-receipt__cmd {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: inherit;
+}
+.otto-receipt__counts {
+  color: var(--muted-foreground);
+}
+.otto-exit--ok {
+  color: var(--success);
+}
+.otto-exit--bad {
+  color: var(--destructive-text);
+}
+.otto-exit--none {
+  color: var(--muted-foreground);
+}
+.otto-tag {
+  border: 1px solid var(--border-hairline);
+  border-radius: 2px;
+  padding: 0 5px;
+  color: var(--muted-foreground);
+}
+.otto-trap {
+  display: grid;
+  gap: 2px;
+  padding-left: 12px;
+  margin-top: 4px;
+}
+.otto-trap__tag {
+  justify-self: start;
+  border: 1px solid var(--border-hairline);
+  border-radius: 2px;
+  padding: 0 6px;
+}
+.otto-trap__id {
+  color: var(--muted-foreground);
+}
+.otto-trap__fix {
+  color: var(--muted-foreground);
+  font-family: var(--font-sans);
+}
+.otto-trap__msg {
+  font-family: var(--font-sans);
+}
+.otto-receipt__output {
+  max-height: 240px;
+  overflow: auto;
+  margin: 4px 0 0;
+  padding: 8px;
+  border: 1px solid var(--border-hairline);
+  white-space: pre-wrap;
+}
+
+/* ---- Feed header ---- */
+.otto-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-hairline);
+}
+.otto-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--muted-foreground);
+}
+.otto-count {
+  color: var(--ink);
+  font-size: 15px;
+}
+
+/* ---- Rules table ---- */
+.otto-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.otto-table th,
+.otto-table td {
+  text-align: left;
+  vertical-align: top;
+  padding: 6px 8px 6px 0;
+  border-bottom: 1px solid var(--border-hairline);
+}
+.otto-table th {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  font-weight: 500;
+}
+
+/* ---- Skeleton and empty state ---- */
+.otto-skel__row {
+  height: 28px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--border-hairline);
+}
+.otto-skel__bar {
+  display: block;
+  height: 8px;
+  background: color-mix(in oklch, var(--ink) 11%, var(--canvas));
+  transform-origin: left center;
+  animation: otto-marker-draw 400ms ease-out;
+}
+.otto-empty {
+  display: grid;
+  gap: 0;
+}
+.otto-empty__rule {
+  border-bottom: 1px solid var(--border-hairline);
+  height: 20px;
+}
+.otto-empty__line {
+  margin: 0;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-hairline);
+}
+.otto-empty .otto-textbtn {
+  justify-self: start;
+  padding: 10px 0;
+}
+
+/* ---- Badge ---- */
+.otto-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 6px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* ---- Bake-off ---- */
+.otto-select,
+.otto-textarea {
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--ink);
+  font-size: 13px;
+  padding: 4px 8px;
+  max-width: 100%;
+}
+.otto-textarea {
+  width: 100%;
+  resize: vertical;
+  font-family: inherit;
+}
+.otto-form {
+  display: grid;
+  gap: 12px;
+}
+.otto-field {
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+}
+.otto-field--set {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+.otto-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0;
+}
+.otto-bk__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0;
+  font-size: 15px;
+  font-weight: 500;
+}
+.otto-board {
+  display: grid;
+  gap: 8px;
+}
+.otto-board__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.otto-board__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
+  padding: 8px 4px;
+}
+.otto-board__name {
+  min-width: 110px;
+}
+.otto-weekbars {
+  color: var(--muted-foreground);
+  flex: none;
+}
+.otto-suggestion {
+  flex: 1 1 280px;
+  min-width: 0;
+  font-size: 13px;
+}
+.otto-row__head--static {
+  cursor: default;
+}
+.otto-stages {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+}
+.otto-stagebox {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: grab;
+}
+.otto-stagebox[data-dragging="true"] {
+  opacity: 0.5;
+}
+.otto-stagebox__main {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.otto-stagebox__main[aria-current="true"] {
+  border-color: var(--ink);
+}
+.otto-stagearrow {
+  color: var(--muted-foreground);
+}
+.otto-runform {
+  padding: 4px 4px 14px;
+}
+.otto-pre {
+  white-space: pre-wrap;
+  font-size: 12px;
+  margin: 4px 0 8px;
+}
+.otto-meter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.otto-meter__label {
+  min-width: 40px;
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+.otto-meter__track {
+  position: relative;
+  display: inline-block;
+  width: 160px;
+  height: 8px;
+  border: 1px solid var(--border-hairline);
+  border-radius: 1px;
+}
+.otto-meter__fill {
+  display: block;
+  height: 100%;
+  background: var(--ink);
+}
+.otto-meter__fill[data-over="true"] {
+  background: var(--destructive-text);
+}
+.otto-meter__limit {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 0;
+  border-left: 1px solid var(--muted-foreground);
+}
+.otto-tally {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.otto-twin summary {
+  list-style: none;
+  cursor: pointer;
+  display: inline-block;
+}
+.otto-twin {
+  margin-top: 8px;
+}
+.otto-handcircle {
+  position: relative;
+  display: inline-block;
+  padding: 0 6px;
+}
+.otto-handcircle__svg {
+  position: absolute;
+  left: -6px;
+  top: -5px;
+  width: calc(100% + 12px);
+  height: calc(100% + 10px);
+  transform: rotate(-3deg);
+  overflow: visible;
+  pointer-events: none;
+}
+.otto-handcircle__ellipse {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 0;
+  --otto-circle-length: 100;
+  animation: otto-circle-draw 450ms ease-in-out;
+}
+
+/* ---- Bake-off race ---- */
+.otto-lanes {
+  --otto-lane-label: 120px;
+  display: grid;
+  gap: 4px;
+}
+.otto-lanes__plot {
+  position: relative;
+  margin-top: 18px;
+}
+.otto-lane {
+  display: grid;
+  grid-template-columns: var(--otto-lane-label) minmax(0, 1fr);
+  align-items: center;
+  height: 28px;
+  border-bottom: 1px solid var(--border-hairline);
+}
+.otto-lane__label {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.otto-lane__svg {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+.otto-lane__line {
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.otto-lane__line--live {
+  stroke: var(--attention);
+  animation: otto-live-breathe 2.4s ease-in-out infinite;
+}
+.otto-lane__where {
+  fill: var(--ink);
+}
+.otto-lane__failtext {
+  fill: var(--destructive-text);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.otto-tick--cmd {
+  stroke: var(--muted-foreground);
+  stroke-width: 1;
+}
+.otto-tick--check {
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+.otto-tick--failed {
+  stroke: var(--destructive);
+  stroke-width: 1.5;
+}
+.otto-photo {
+  position: absolute;
+  top: -16px;
+  bottom: 0;
+  border-left: 1px dashed var(--ink);
+  pointer-events: none;
+}
+.otto-photo__label {
+  position: absolute;
+  top: 0;
+  left: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+  color: var(--muted-foreground);
+}
+.otto-axis {
+  position: relative;
+  height: 18px;
+  margin-left: var(--otto-lane-label);
+}
+.otto-axis__tick {
+  position: absolute;
+  top: 0;
+  padding-left: 3px;
+  border-left: 1px solid var(--border-hairline);
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+
+/* ---- Contact prints ---- */
+.otto-prints {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+@media (max-width: 639px) {
+  .otto-prints {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.otto-print {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-hairline);
+}
+.otto-print p {
+  margin: 0;
+}
+.otto-print__bar {
+  display: flex;
+  height: 10px;
+  background: color-mix(in oklch, var(--ink) 4%, var(--canvas));
+}
+.otto-print__add {
+  display: block;
+  background: var(--success);
+}
+.otto-print__del {
+  display: block;
+  background: var(--destructive);
+}
+.otto-print__name {
+  font-size: 15px;
+  padding: 2px 0;
+}
+.otto-print__status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+}
+.otto-print__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ---- Live work ---- */
+.otto-live {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--attention);
+  animation: otto-live-breathe 2.4s ease-in-out infinite;
+}
+
+@keyframes otto-stamp-land {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes otto-row-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes otto-marker-draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes otto-circle-draw {
+  from {
+    stroke-dashoffset: var(--otto-circle-length, 400);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes otto-live-breathe {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .otto-stamp--land,
+  .otto-row,
+  .otto-marker::before,
+  .otto-skel__bar,
+  .otto-live,
+  .otto-lane__line--live,
+  .otto-handcircle__ellipse {
+    animation: none;
+  }
+  .otto-live {
+    opacity: 1;
+  }
+}
