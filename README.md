@@ -13,11 +13,22 @@ After every finished agent turn, Otto reads the raw command log (exit codes and 
 
 Otto never edits your files and makes no network call of its own. Everything it stores stays in the plugin's own database on your bb server.
 
+## Requirements
+
+Otto is a plugin for [bb](https://github.com/get-bb/bb) ([getbb.app](https://getbb.app)), version 0.46 or newer. It does not install bb for you.
+
+1. Get bb from the [desktop app download](https://github.com/get-bb/bb/releases/tag/desktop-latest), or run `npx bb-app@latest` and open `http://localhost:38886`.
+2. In bb, open **Settings, General, Command line** and choose **Install**, so the `bb` command works in your terminal.
+3. Check it with `bb --version`.
+
 ## Install
 
 ```sh
-bb plugin install path:/path/to/bb-plugin-otto
+git clone https://github.com/Jerbud308/bb-plugin-otto.git
+bb plugin install path:$PWD/bb-plugin-otto
 ```
+
+If the install reports a missing dependency, run `npm install` inside the folder and try again.
 
 For a local checkout, `bb plugin build` compiles it and `bb plugin reload otto` loads a change.
 
