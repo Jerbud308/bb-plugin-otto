@@ -11,6 +11,8 @@ export interface ClaimSpan {
 const GUARD =
   /\b(?:not|never|no|without|cannot|can't|couldn't|didn't|don't|doesn't|isn't|aren't|wasn't|weren't|haven't|hasn't|won't|fail(?:s|ed|ing)?|unable|if|once|until|unless|should|will|would|could|might|may|needs? to|to make|ensure|verify that|check (?:that|whether|if))\b/;
 
+const REMOTE_SCOPE = /\b(?:github(?:'s)?|ci|actions?)\s+$/;
+
 const CLAIM_ORDER: ClaimKind[] = ["tests", "typecheck", "build", "lint", "ci", "done"];
 
 const CLAIMS: Record<ClaimKind, RegExp[]> = {
@@ -31,6 +33,7 @@ const CLAIMS: Record<ClaimKind, RegExp[]> = {
   ],
   lint: [/\blint(?:ing|er)?\s+(?:is\s+|now\s+)?(?:clean|pass(?:es|ed|ing)?|green)\b/g],
   ci: [
+    /\b(?:github(?:'s)?|ci|actions?)\s+(?:tests?|checks?)\s+(?:all\s+|now\s+)?(?:are\s+|were\s+)?(?:green|pass(?:es|ed|ing)?)\b/g,
     /\bci\s+(?:is\s+|now\s+)?(?:green|pass(?:es|ed|ing)?)\b/g,
     /\b(?:all\s+)?checks\s+(?:are\s+|now\s+)?(?:green|pass(?:es|ed|ing)?)\b/g,
   ],
@@ -55,6 +58,8 @@ function firstUnguarded(t: string, kind: ClaimKind): { start: number; end: numbe
         before.lastIndexOf("\n"),
       );
       const prefix = before.slice(b + 1);
+      // "GitHub's tests passed" is a CI claim, not a claim about a local test run.
+      if (kind === "tests" && REMOTE_SCOPE.test(prefix)) continue;
       if (!GUARD.test(prefix)) return { start: m.index, end: m.index + m[0].length };
     }
   }

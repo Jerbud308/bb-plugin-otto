@@ -18,9 +18,20 @@ export interface CommandItem {
   truncation?: { aggregatedOutput?: { originalLength: number } & Record<string, number> };
 }
 
+// A command tagged `# otto:expect-fail` (or `# otto:baseline`) is meant to fail: a deliberate
+// break, or a run on the old code to show a failure was already there. Its failures are not findings.
+export const EXPECT_FAIL = /#\s*otto:(?:expect-fail|baseline)\b/;
+
+const FAILURE_CODE = /^OTTO00[567]\b/;
+
 // Returns finding codes. "OTTO003:medium" is rule OTTO003 at severity medium; a bare "OTTO001"
 // uses the rule's default severity.
 export function commandRules(item: CommandItem): string[] {
+  const f = baseRules(item);
+  return EXPECT_FAIL.test(item.command) ? f.filter((c) => !FAILURE_CODE.test(c)) : f;
+}
+
+function baseRules(item: CommandItem): string[] {
   const cmd = unwrapCommand(item.command);
   const out = item.aggregatedOutput ?? "";
   const f: string[] = [];

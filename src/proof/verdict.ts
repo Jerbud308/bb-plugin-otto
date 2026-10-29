@@ -2,6 +2,7 @@
 import type { ClaimStatus, Verdict } from "../shared/contract";
 import type { CheckKind } from "./classify";
 import { extractClaims, type ClaimKind } from "./claims";
+import { EXPECT_FAIL } from "./rules";
 import type { TurnItem } from "./turns";
 
 export const FAILURE_CODES = new Set(["OTTO005", "OTTO006", "OTTO007"]);
@@ -41,11 +42,12 @@ export function lastMessageText(items: readonly TurnItem[]): string {
   return text;
 }
 
-// Index of the last command in the turn whose kinds include the check kind, or -1.
+// Index of the last command in the turn whose kinds include the check kind, or -1. A run tagged
+// expect-fail is never evidence for a claim, in either direction.
 export function lastCheckIndex(items: readonly TurnItem[], kind: CheckKind): number {
   let idx = -1;
   items.forEach((x, i) => {
-    if (x.kind === "cmd" && x.kinds.includes(kind)) idx = i;
+    if (x.kind === "cmd" && x.kinds.includes(kind) && !EXPECT_FAIL.test(x.item.command)) idx = i;
   });
   return idx;
 }
